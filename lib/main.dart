@@ -13,6 +13,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.light().copyWith(
+        primaryTextTheme: TextTheme(),
+        textTheme: TextTheme(
+          headline1: TextStyle(fontWeight: FontWeight.bold),
+          headline6: TextStyle(fontStyle: FontStyle.italic),
+          bodyText2: TextStyle(fontFamily: 'Hind'),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       initialRoute: FirstScreen.id,
       routes: {

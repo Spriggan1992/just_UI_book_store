@@ -1,11 +1,21 @@
 import 'package:book_store/models/book.dart';
 import 'package:book_store/models/books.dart';
 import 'package:book_store/utils/size_config.dart';
+import 'package:book_store/widgets/text_holder.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/size_config.dart';
+import 'second_screen.dart';
 
 class FirstScreen extends StatelessWidget {
   static String id = 'first_screen';
   final List<Book> books = Books().books;
+  final List<IconData> icons = [
+    Icons.home,
+    Icons.bookmark,
+    Icons.shopping_basket,
+    Icons.settings
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +23,9 @@ class FirstScreen extends StatelessWidget {
     final defaultSize = SizeConfig.defaultSize;
     return SafeArea(
       child: Scaffold(
-          // extendBodyBehindAppBar: true,
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
+            toolbarHeight: defaultSize * 10,
             actions: [
               Padding(
                 padding: EdgeInsets.only(right: defaultSize * 2),
@@ -28,92 +39,131 @@ class FirstScreen extends StatelessWidget {
             ),
             backgroundColor: Colors.transparent,
           ),
-          bottomNavigationBar:
-              Container(color: Colors.red, height: defaultSize * 7),
+          bottomNavigationBar: Container(
+              height: defaultSize * 5,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ...List.generate(
+                      icons.length,
+                      (index) => Icon(icons[index],
+                          color: index == 0
+                              ? Color(0xFF413b89)
+                              : Colors.grey[400]))
+                ],
+              )),
+          // Container(color: Colors.red, height: defaultSize * 5),
           body: _buildBody(context, defaultSize)),
     );
   }
 
   Widget _buildBody(BuildContext context, double defaultSize) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: defaultSize * 3),
-      child: Column(
-        children: [
-          SizedBox(height: defaultSize * 4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                    child: TextHolder(
-                  title: 'Popular Now',
-                  fontSize: defaultSize * 3,
-                  fontWeight: FontWeight.bold,
-                )),
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: books.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius:
-                                    BorderRadius.circular(defaultSize * 0.5)),
-                            margin: EdgeInsets.only(
-                              right: defaultSize * 2,
-                              top: defaultSize * 3,
-                              bottom: defaultSize * 2,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: defaultSize * 2,
-                            ),
-                            width: defaultSize * 13,
-                            height: defaultSize * 20,
-                          ),
-                          TextHolder(
-                              title: books[index].title,
-                              fontSize: defaultSize * 1.5),
-                          SizedBox(height: defaultSize * 1),
-                          TextHolder(
-                              title: books[index].autor,
-                              color: Colors.grey,
-                              fontSize: defaultSize * 1.2)
-                        ],
-                      );
-                    },
-                  ),
-                )
-              ],
-            ),
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: SizeConfig.blockSizeVertical * 100,
+          // maxWidth: SizeConfig.blockSizeHorizontal * 80,
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            right: defaultSize * 2,
+            left: defaultSize * 2,
+            top: defaultSize * 10,
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              ReusableListVieContainer(books: books, title: 'Popular Now'),
+              ReusableListVieContainer(books: books, title: 'Bestsellers'),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class TextHolder extends StatelessWidget {
-  const TextHolder({
+class ReusableListVieContainer extends StatelessWidget {
+  const ReusableListVieContainer({
     Key key,
-    @required this.title,
-    this.fontSize,
-    this.color = Colors.black,
-    this.fontWeight = FontWeight.normal,
+    @required this.books,
+    this.title,
   }) : super(key: key);
 
+  final List<Book> books;
   final String title;
-  final double fontSize;
-  final Color color;
-  final FontWeight fontWeight;
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: TextStyle(
-            fontSize: fontSize, fontWeight: fontWeight, color: color));
+    SizeConfig().init(context);
+    final defaultSize = SizeConfig.defaultSize;
+    return Flexible(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextHolder(
+            title: title,
+            fontSize: defaultSize * 3.5,
+            fontWeight: FontWeight.bold,
+          ),
+          Flexible(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SecondScreen(book: books[index])));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: AssetImage(books[index].imgUrl)),
+                            color: Color(0xFF413b89),
+                            borderRadius:
+                                BorderRadius.circular(defaultSize * 1)),
+                        margin: EdgeInsets.only(
+                          right: defaultSize * 2,
+                          top: defaultSize * 2,
+                          bottom: defaultSize * 1.5,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: defaultSize * 2,
+                        ),
+                        width: defaultSize * 13,
+                        height: defaultSize * 16,
+                      ),
+                    ),
+                    Flexible(
+                      child: TextHolder(
+                        title: books[index].title,
+                        fontSize: defaultSize * 1.5,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: defaultSize * 0.5),
+                    Flexible(
+                      child: TextHolder(
+                        title: books[index].autor,
+                        color: Colors.grey,
+                        fontSize: defaultSize * 1.2,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
