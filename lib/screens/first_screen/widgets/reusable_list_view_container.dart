@@ -10,7 +10,6 @@ class ReusableListVieContainer extends StatelessWidget {
     @required this.books,
     this.title,
   }) : super(key: key);
-
   final List<Book> books;
   final String title;
 
