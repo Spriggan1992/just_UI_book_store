@@ -1,7 +1,7 @@
-import 'package:book_store/screens/first_screen.dart';
+import 'package:book_store/screens/first_screen/first_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'screens/second_screen.dart';
+import 'screens/second_screen/second_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,9 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         primaryTextTheme: TextTheme(),
         textTheme: TextTheme(
-          headline1: TextStyle(fontWeight: FontWeight.bold),
-          headline6: TextStyle(fontStyle: FontStyle.italic),
-          bodyText2: TextStyle(fontFamily: 'Hind'),
+          bodyText2: TextStyle(fontFamily: 'Rubik'),
         ),
       ),
       debugShowCheckedModeBanner: false,

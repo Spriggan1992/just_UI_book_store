@@ -60,10 +60,11 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Montserrat
+    - family: Rubik
       fonts:
-        - asset: fonts/Montserrat-Regular.ttf
+        - asset: fonts/Rubik-Regular.ttf
           style: italic
+          weight: 900
 
   #
   # For details regarding fonts from package dependencies,
